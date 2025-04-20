@@ -1,5 +1,6 @@
 package com.gabrielferreira02.CraqueDaPartida.service;
 
+import com.gabrielferreira02.CraqueDaPartida.config.RabbitMQConfig;
 import com.gabrielferreira02.CraqueDaPartida.dto.JogadorVoto;
 import com.gabrielferreira02.CraqueDaPartida.dto.VotoRequest;
 import com.gabrielferreira02.CraqueDaPartida.dto.VotoResponse;
@@ -9,6 +10,7 @@ import com.gabrielferreira02.CraqueDaPartida.exception.EnqueteNotFoundException;
 import com.gabrielferreira02.CraqueDaPartida.exception.JogadorNaoExisteNaEnqueteException;
 import com.gabrielferreira02.CraqueDaPartida.repository.EnqueteRepository;
 import com.gabrielferreira02.CraqueDaPartida.repository.JogadorRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,7 @@ public class VotosService {
     @Autowired
     private EnqueteRepository enqueteRepository;
     @Autowired
-    private JogadorRepository jogadorRepository;
-    @Autowired
-    private ProcessaVotos processaVotos;
+    private RabbitTemplate rabbitTemplate;
 
     public void votar(VotoRequest body) {
         Long enqueteId = body.enqueteId();
@@ -50,7 +50,11 @@ public class VotosService {
             throw new EnqueteInativaException("Enquete encerrada");
         }
 
-        processaVotos.processarVoto(body);
+       rabbitTemplate.convertAndSend(
+               RabbitMQConfig.EXCHANGE_NOME,
+               RabbitMQConfig.ROUTING_KEY,
+               body
+       );
     }
 
     public VotoResponse resultado(Long id) {
