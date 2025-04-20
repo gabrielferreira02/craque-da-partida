@@ -1,4 +1,6 @@
 package com.gabrielferreira02.CraqueDaPartida.dto;
 
-public record VotoRequest(Long jogadorId, Long enqueteId) {
+import java.io.Serializable;
+
+public record VotoRequest(Long jogadorId, Long enqueteId) implements Serializable {
 }
