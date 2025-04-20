@@ -4,6 +4,9 @@ import com.gabrielferreira02.CraqueDaPartida.dto.JogadorVoto;
 import com.gabrielferreira02.CraqueDaPartida.dto.VotoRequest;
 import com.gabrielferreira02.CraqueDaPartida.dto.VotoResponse;
 import com.gabrielferreira02.CraqueDaPartida.entity.Enquete;
+import com.gabrielferreira02.CraqueDaPartida.exception.EnqueteInativaException;
+import com.gabrielferreira02.CraqueDaPartida.exception.EnqueteNotFoundException;
+import com.gabrielferreira02.CraqueDaPartida.exception.JogadorNaoExisteNaEnqueteException;
 import com.gabrielferreira02.CraqueDaPartida.repository.EnqueteRepository;
 import com.gabrielferreira02.CraqueDaPartida.repository.JogadorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +37,17 @@ public class VotosService {
         }
 
         if(!enqueteRepository.existsById(enqueteId)) {
-            throw new IllegalArgumentException("Enquete não encontrada");
+            throw new EnqueteNotFoundException("Enquete não encontrada");
         }
 
         if(!enqueteRepository.existsByJogadorId(jogadorId)) {
-            throw new IllegalArgumentException("Jogador não encontrado na enquete");
+            throw new JogadorNaoExisteNaEnqueteException("Jogador não encontrado na enquete");
         }
 
         Optional<Enquete> enquete = enqueteRepository.findById(enqueteId);
 
         if(!enquete.get().isAtiva()) {
-            throw new IllegalArgumentException("Enquete encerrada");
+            throw new EnqueteInativaException("Enquete encerrada");
         }
 
         processaVotos.processarVoto(body);
@@ -54,7 +57,7 @@ public class VotosService {
         Optional<Enquete> getEnquete = enqueteRepository.findById(id);
 
         if (getEnquete.isEmpty()) {
-            throw new IllegalArgumentException("Enquete não encontrada");
+            throw new EnqueteNotFoundException("Enquete não encontrada");
         }
 
         Enquete enquete = getEnquete.get();
