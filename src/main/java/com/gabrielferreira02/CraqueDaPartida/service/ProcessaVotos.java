@@ -6,6 +6,7 @@ import com.gabrielferreira02.CraqueDaPartida.entity.Enquete;
 import com.gabrielferreira02.CraqueDaPartida.repository.EnqueteRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,8 +17,8 @@ public class ProcessaVotos {
     @Autowired
     private EnqueteRepository enqueteRepository;
 
-    @RabbitListener(queues = RabbitMQConfig.QUEUE_NOME)
-    public void processarVoto(VotoRequest voto) {
+    @RabbitListener(queues = RabbitMQConfig.QUEUE_NOME, containerFactory = "rabbitListenerContainerFactory")
+    public void processarVoto(@Payload VotoRequest voto) {
         Optional<Enquete> getEnquete = enqueteRepository.findById(voto.enqueteId());
 
         Enquete enquete = getEnquete.get();
