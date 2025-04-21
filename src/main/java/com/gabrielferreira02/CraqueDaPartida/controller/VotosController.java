@@ -21,9 +21,4 @@ public class VotosController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<VotoResponse> resultado(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(votosService.resultado(id));
-    }
-
 }

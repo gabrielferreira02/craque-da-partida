@@ -57,29 +57,4 @@ public class VotosService {
        );
     }
 
-    public VotoResponse resultado(Long id) {
-        Optional<Enquete> getEnquete = enqueteRepository.findById(id);
-
-        if (getEnquete.isEmpty()) {
-            throw new EnqueteNotFoundException("Enquete não encontrada");
-        }
-
-        Enquete enquete = getEnquete.get();
-        long total = enquete.getVotosJogador1() + enquete.getVotosJogador2() + enquete.getVotosJogador3();
-        System.out.println(total);
-        return getVotoResponse(total, enquete);
-    }
-
-    private static VotoResponse getVotoResponse(long total, Enquete enquete) {
-        DecimalFormat df = new DecimalFormat("#0.00");
-        String porcentagemJogador1 = (total == 0) ? "0.0" : df.format((double) enquete.getVotosJogador1() / total);
-        String porcentagemJogador2 = (total == 0) ? "0.0" : df.format((double) enquete.getVotosJogador2() / total);
-        String porcentagemJogador3 = (total == 0) ? "0.0" : df.format((double) enquete.getVotosJogador3() / total);
-
-        JogadorVoto jogador1 = new JogadorVoto(enquete.getJogador1().getNome(), porcentagemJogador1);
-        JogadorVoto jogador2 = new JogadorVoto(enquete.getJogador2().getNome(), porcentagemJogador2);
-        JogadorVoto jogador3 = new JogadorVoto(enquete.getJogador3().getNome(), porcentagemJogador3);
-
-        return new VotoResponse(jogador1, jogador2, jogador3);
-    }
 }

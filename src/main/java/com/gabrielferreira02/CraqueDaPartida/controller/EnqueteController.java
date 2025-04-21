@@ -1,6 +1,7 @@
 package com.gabrielferreira02.CraqueDaPartida.controller;
 
 import com.gabrielferreira02.CraqueDaPartida.dto.EnqueteRequest;
+import com.gabrielferreira02.CraqueDaPartida.dto.VotoResponse;
 import com.gabrielferreira02.CraqueDaPartida.service.EnqueteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,11 @@ public class EnqueteController {
 
     @Autowired
     private EnqueteService enqueteService;
+
+    @GetMapping("{id}")
+    public ResponseEntity<VotoResponse> resultado(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(enqueteService.resultado(id));
+    }
 
     @PostMapping
     public ResponseEntity<Object> criar(@RequestBody EnqueteRequest request) {
