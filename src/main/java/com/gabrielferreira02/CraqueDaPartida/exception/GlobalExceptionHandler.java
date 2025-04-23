@@ -23,4 +23,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErroResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(JogadorNaoExisteNaEnqueteException.class)
+    public ResponseEntity<ErroResponse> handleJogadorNaoExisteNaEnqueteException(JogadorNaoExisteNaEnqueteException e) {
+        return ResponseEntity.badRequest().body(new ErroResponse(e.getMessage()));
+    }
+
 }
