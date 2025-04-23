@@ -8,6 +8,7 @@ import com.gabrielferreira02.CraqueDaPartida.entity.Jogador;
 import com.gabrielferreira02.CraqueDaPartida.exception.EnqueteNotFoundException;
 import com.gabrielferreira02.CraqueDaPartida.repository.EnqueteRepository;
 import com.gabrielferreira02.CraqueDaPartida.repository.JogadorRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.text.DecimalFormat;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class EnqueteService {
 
     @Autowired
@@ -27,18 +29,22 @@ public class EnqueteService {
         if(jogador1 == null ||
                 jogador2 == null ||
                 jogador3 == null) {
+            log.error("Falha ao criar enquete, precisam ter 3 jogadores listados");
             throw new IllegalArgumentException("Precisam ter 3 jogadores listados");
         }
 
         if(jogador1.equals(jogador2)) {
+            log.error("O id {} está repetido na mesma enquete", jogador1);
             throw new IllegalArgumentException("Não é permitido o mesmo jogador na enquete");
         }
 
         if(jogador1.equals(jogador3)) {
+            log.error("O id {} está repetido na mesma enquete", jogador3);
             throw new IllegalArgumentException("Não é permitido o mesmo jogador na enquete");
         }
 
         if(jogador2.equals(jogador3)) {
+            log.error("O id {} está repetido na mesma enquete", jogador2);
             throw new IllegalArgumentException("Não é permitido o mesmo jogador na enquete");
         }
 
@@ -47,14 +53,17 @@ public class EnqueteService {
         Optional<Jogador> jogador3Entity = jogadorRepository.findById(jogador3);
 
         if(jogador1Entity.isEmpty()) {
+            log.error("O jogador de id {} não foi encontrado", jogador1);
             throw new IllegalArgumentException("Jogador não encontrado");
         }
 
         if(jogador2Entity.isEmpty()) {
+            log.error("O jogador de id {} não foi encontrado", jogador2);
             throw new IllegalArgumentException("Jogador não encontrado");
         }
 
         if(jogador3Entity.isEmpty()) {
+            log.error("O jogador de id {} não foi encontrado", jogador3);
             throw new IllegalArgumentException("Jogador não encontrado");
         }
 
@@ -65,29 +74,33 @@ public class EnqueteService {
         enquete.setAtiva(true);
 
         enqueteRepository.save(enquete);
+        log.info("Enquete criada com sucesso");
     }
 
     public void desativar(Long id) {
         Optional<Enquete> enquete = enqueteRepository.findById(id);
 
         if(enquete.isEmpty()) {
+            log.error("Enquete {} não encontrada", id);
             throw new EnqueteNotFoundException("Enquete não existe");
         }
 
         enquete.get().setAtiva(false);
         enqueteRepository.save(enquete.get());
+        log.info("Enquete {} desativada com sucessos", id);
     }
 
     public VotoResponse resultado(Long id) {
         Optional<Enquete> getEnquete = enqueteRepository.findById(id);
 
         if (getEnquete.isEmpty()) {
+            log.error("Enquete com id {} não encontrada", id);
             throw new EnqueteNotFoundException("Enquete não encontrada");
         }
 
         Enquete enquete = getEnquete.get();
         long total = enquete.getVotosJogador1() + enquete.getVotosJogador2() + enquete.getVotosJogador3();
-        System.out.println(total);
+        log.info("Resultado da enquete com id {} retornado com sucesso", id);
         return getVotoResponse(total, enquete);
     }
 
